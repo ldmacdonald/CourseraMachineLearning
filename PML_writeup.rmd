@@ -1,0 +1,36 @@
+---
+title: "PML Training Analysis"
+author: "ldmacdonald"
+date: "Sunday, April 26, 2015"
+output: html_document
+---
+
+## Purpose Statement
+
+The purpose of this document is to describe a prediction method for determining if an excercise is based correctly based upon accelorometer readings gathered from the Groupware Human Activity Recognition dataset.  For the purpose of this excercise we will be using a random forest to build a model against the total_accel class of measures included in the data.  The idea behind this being that part of what determines the proper execution of a dataset is consistent speed in the movements.  
+
+## Method
+
+This model will be built against the 'pml-training.csv' and 'pml-testing.csv' files provided as part of the assignment.  These files contain approximately 160 measures tracking accelorometers placed on different parts of the body and equipment measuring acceleration, relative position and other potentially relevant information.  For the purpose of this model, we will be utilizing the total acceleration measures (total_accel_belt, total_accel_forearm, total_accel_arm, total_accel_dumbbell) to build a random forest model.  The idea is that consistent movement at the sensors will indicate proper form for the excercise.
+
+```{r}
+library(caret)
+traindat <- read.csv('pml-training.csv')
+testdat <- read.csv('pml-testing.csv')
+dattotals <- subset(traindat,,select=c(total_accel_belt, total_accel_forearm, total_accel_arm, total_accel_dumbbell,classe) )
+```
+
+We will split the training set into two subsets in order to perform cross-validation and estimate the expected error.
+
+```{r}
+trainIndex = createDataPartition(dattotals$classe, p = 0.50,list=FALSE)
+train1 = dattotals[trainIndex,]
+train2 = dattotals[-trainIndex,]
+
+modtrain = train(classe~., data=train1, method='rf')
+predtrain <- predict (modtrain, train2)
+```
+
+```{r}
+
+```
